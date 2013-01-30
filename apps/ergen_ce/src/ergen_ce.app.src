@@ -1,0 +1,40 @@
+%%-*- mode: erlang -*-
+{application, ergen_ce,
+ [{description, "ERGen: TPC-E benchmark simulator / Customer Emulator"},
+  {id, "ergen"},
+  {vsn, "0.5"},
+  {modules, []},
+  {registered, [ergen_ce_sup]},
+  {applications, [kernel, stdlib]},
+  {mod, {ergen_app,
+         [
+          {groups, {seq,1001,1010,1,2} },
+          {driver, [
+                    {name, <<"libergen_ce_drv">>},
+                    {options, [
+                               {'configured_customer_count', 1000},  % 5000
+                               {'active_customer_count', 1000},      % 5000
+                               {'scale_factor', 500},                %  500
+                               {'days_of_initial_trades', 300},      %  300
+                               %% << for debug
+                               {'broker_volume_mix_level', 49},      %   49
+                               {'customer_position_mix_level', 130}, %  130
+                               {'market_watch_mix_level', 180},      %  180
+                               {'security_detail_mix_level', 140},   %  140
+                               {'trade_lookup_mix_level', 80},       %   80
+                               {'trade_order_mix_level', 101},       %  101
+                               {'trade_status_mix_level', 190},      %  190
+                               {'trade_update_mix_level', 20},       %   20
+                               %% >> for debug
+                               {'path', "/Volumes/Plextor/egen/1.12.0.1/flat_in"}
+                              ]}
+                   ]},
+          {server, [
+                    {connection, <<"amqp://localhost">>},
+                    {options, [
+                               {exchange, <<"ergen.topic">>},
+                               {logger, <<"ergen.fanout">>}
+                              ]}
+                   ]}
+         ]}}
+ ]}.

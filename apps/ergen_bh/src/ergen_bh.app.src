@@ -1,0 +1,28 @@
+%%-*- mode: erlang -*-
+{application, ergen_bh,
+ [{description, "ERGen: TPC-E benchmark simulator / Brokerage House"},
+  {id, "ergen"},
+  {vsn, "0.5"},
+  {modules, []},
+  {registered, [ergen_bh_sup]},
+  {applications, [kernel, stdlib]},
+  {mod, {ergen_app,
+         [
+          {groups, {seq,101,106,1,2} },
+          {driver, [
+                    {name, <<"libergen_bh_drv">>},
+                    {options, [
+                               {connectString, "dsn=myodbc;server=localhost;socket=/tmp/mysql.sock;user=tpce;pwd=tpce;database=tpce"} % darwin 12.2.0
+                               %%{connectString, "dsn=myodbc;server=localhost;socket=/var/run/mysqld/mysqld.sock;user=tpce;pwd=tpce;database=tpce"} % ubuntu 12.04.1
+                              ]}
+                   ]},
+          {server, [
+                    {connection, <<"amqp://localhost">>},
+                    {options, [
+                               {exchange, <<"ergen.topic">>},
+                               {subscribe, [<<"ergen.BH">>]},
+                               {logger, <<"ergen.fanout">>}
+                              ]}
+                   ]}
+         ]}}
+ ]}.

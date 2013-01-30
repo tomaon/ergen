@@ -1,0 +1,30 @@
+%%-*- mode: erlang -*-
+{application, ergen_mee,
+ [{description, "ERGen: TPC-E benchmark simulator / Market Exchange Emulator"},
+  {id, "ergen"},
+  {vsn, "0.5"},
+  {modules, []},
+  {registered, [ergen_mee_sup]},
+  {applications, [kernel, stdlib]},
+  {mod, {ergen_app,
+         [
+          {groups, {seq,11,14,1,2}  },
+          {driver, [
+                    {name, <<"libergen_mee_drv">>},
+                    {options, [
+                               {'trading_time_so_far', 0},          %    0
+                               {'configured_customer_count', 1000}, % 5000
+                               {'active_customer_count', 1000},     % 5000
+                               {'path', "/Volumes/Plextor/egen/1.12.0.1/flat_in"}
+                              ]}
+                   ]},
+          {server, [
+                    {connection, <<"amqp://localhost">>},
+                    {options, [
+                               {exchange, <<"ergen.topic">>},
+                               {subscribe, [<<"ergen.MEE">>]},
+                               {logger, <<"ergen.fanout">>}
+                              ]}
+                   ]}
+         ]}}
+ ]}.

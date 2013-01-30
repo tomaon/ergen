@@ -1,0 +1,12 @@
+diff -r egen-1.12.0/inc/EGenUtilities_stdafx.h egen-1.12.0.1/inc/EGenUtilities_stdafx.h
+43a44
+> #include <cstring>
+diff -r egen-1.12.0/inc/TxnHarnessDBInterface.h egen-1.12.0.1/inc/TxnHarnessDBInterface.h
+46a47
+> #include <cstring>
+diff -r egen-1.12.0/inc/threading.h egen-1.12.0.1/inc/threading.h
+39a40
+> #include <cstring>
+diff -r egen-1.12.0/src/locking.cpp egen-1.12.0.1/src/locking.cpp
+44a45
+> #include <cstring>

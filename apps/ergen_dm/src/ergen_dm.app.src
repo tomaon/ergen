@@ -1,0 +1,30 @@
+%%-*- mode: erlang -*-
+{application, ergen_dm,
+ [{description, "ERGen: TPC-E benchmark simulator / Data Maintenance"},
+  {id, "ergen"},
+  {vsn, "0.5"},
+  {modules, []},
+  {registered, [ergen_dm_sup]},
+  {applications, [kernel, stdlib]},
+  {mod, {ergen_app,
+         [
+          {groups, [ [1] ]},
+          {driver, [
+                    {name, <<"libergen_dm_drv">>},
+                    {options, [
+                               {'configured_customer_count', 1000},  % 5000
+                               {'active_customer_count', 1000},      % 5000
+                               {'scale_factor', 500},                %  500
+                               {'days_of_initial_trades', 300},      %  300
+                               {'path', "/Volumes/Plextor/egen/1.12.0.1/flat_in"}
+                              ]}
+                   ]},
+          {server, [
+                    {connection, <<"amqp://localhost">>},
+                    {options, [
+                               {exchange, <<"ergen.topic">>},
+                               {logger, <<"ergen.fanout">>}
+                              ]}
+                   ]}
+         ]}}
+ ]}.

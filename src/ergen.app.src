@@ -1,0 +1,10 @@
+%%-*- mode: erlang -*-
+{application, ergen,
+ [{description, "ERGen: TPC-E benchmark simulator"},
+  {id, "ergen"},
+  {vsn, "0.5"},
+  {modules, []},
+  {registered, []},
+  {included_applications, [ergen_dm, ergen_bh, ergen_mee, ergen_ce]},
+  {applications, [kernel, stdlib]}
+ ]}.
