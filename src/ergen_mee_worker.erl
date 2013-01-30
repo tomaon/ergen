@@ -91,15 +91,15 @@ handle_call({call,_,_}=R, From, #state{id=I,port=undefined}=S) ->
 handle_call({call,Command,Args}, {_,Tag}, #state{}=S)
   when ?CMD_MEE_SUBMIT_TRADE_RESULT =:= Command;
        ?CMD_MEE_GENERATE_TRADE_RESULT =:= Command ->
-    {Time, Value} = timer:tc(fun handle_run/3, [Command,Args,S]),
+    {Time, {Value,State}} = timer:tc(fun handle_run/3, [Command,Args,S]),
     %%io:format("~p [~p:call] ~p=~p, ~pus~n", [self(),?MODULE,Command,Value,Time]),
-    handle_logger({Command,Value,Time}, S),
+    handle_logger({Command,Value,Time}, State),
     if
         is_integer(Value), Value > 0 ->
             {ok, _} = timer:send_after(Value, {timeout,Tag}),
-            {reply, Value, S#state{tag = Tag}};
+            {reply, Value, State#state{tag = Tag}};
         true ->
-            {reply, Value, S}
+            {reply, Value, State}
     end;
 handle_call({call,Command,Args}, _From, #state{port=P}=S) ->
     {reply, ergen_port:call(P, Command, Args), S};
@@ -140,11 +140,11 @@ handle_info(_Info, State) ->
 
 %% == private: callback ==
 
--spec handle_run(integer(),any(),state()) -> any().
+-spec handle_run(integer(),any(),state()) -> {any(),state()}.
 handle_run(Command, Args, #state{port=P}=S) ->
     case ergen_port:call(P, Command, Args, fun handle_port/1) of
         Term when is_list(Term) ->
-            ergen_util:do_while(fun handle_publish/2, Term, S);
+            {ergen_util:do_while(fun handle_publish/2, Term, S), S};
         {error, Reason} ->
             {error, Reason}
     end.

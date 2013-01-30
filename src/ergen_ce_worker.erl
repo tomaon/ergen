@@ -74,10 +74,10 @@ code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
 handle_call({call,Command,Args}, _From, #state{}=S) ->
-    {Time, Value} = timer:tc(fun handle_run/3, [Command,Args,S]),
+    {Time, {Value,State}} = timer:tc(fun handle_run/3, [Command,Args,S]),
     %%io:format("~p [~p:call] ~p=~p, ~pus~n", [self(),?MODULE,Command,Value,Time]),
-    handle_logger({Command,Value,Time}, S),
-    {reply, Value, S};
+    handle_logger({Command,Value,Time}, State),
+    {reply, Value, State};
 handle_call({setup,Args}, _From, #state{}=S) ->
     try lists:foldl(fun setup/2, S, Args) of
         State ->
@@ -103,11 +103,11 @@ handle_cast(_Request, State) ->
     {noreply, State}.
 
 handle_info({run,Command,Args,Interval}=I, #state{}=S) ->
-    {Time, Value} = timer:tc(fun handle_run/3, [Command,Args,S]),
+    {Time, {Value,State}} = timer:tc(fun handle_run/3, [Command,Args,S]),
     %%io:format("~p [~p:run] ~p=~p, ~pus~n", [self(),?MODULE,Command,Value,Time]),
-    handle_logger({Command,Value,Time}, S),
+    handle_logger({Command,Value,Time}, State),
     {ok, TRef} = timer:send_after(Interval, I),
-    {noreply, S#state{tref = TRef}};
+    {noreply, State#state{tref = TRef}};
 handle_info({#'basic.return'{reply_code=C,reply_text=T},_}, #state{}=S) ->
     {stop, {error,{C,T}}, S}; % TODO
 handle_info({'DOWN',_MRef,process,P,Info}, #state{channel=P}=S) ->
@@ -121,7 +121,7 @@ handle_info(_Info, State) ->
 
 %% == private: callback ==
 
--spec handle_run(integer(),any(),state()) -> any().
+-spec handle_run(integer(),any(),state()) -> {any(),state()}.
 handle_run(Command, Args, #state{id=I,port=undefined}=S) ->
     case ergen_sup:start_port(ce, I) of
         {ok, Pid} ->
@@ -132,7 +132,7 @@ handle_run(Command, Args, #state{id=I,port=undefined}=S) ->
 handle_run(Command, Args, #state{port=P}=S) ->
     case ergen_port:call(P, Command, Args, fun handle_port/1) of
         Term when is_list(Term) ->
-            ergen_util:do_while(fun handle_publish/2, Term, S);
+            {ergen_util:do_while(fun handle_publish/2, Term, S), S};
         {error, Reason} ->
             {error, Reason}
     end.
