@@ -14,8 +14,7 @@
                     {options, [
                                {'trading_time_so_far', 0},          %    0
                                {'configured_customer_count', 1000}, % 5000
-                               {'active_customer_count', 1000},     % 5000
-                               {'path', "/Volumes/Plextor/egen/1.12.0.1/flat_in"}
+                               {'active_customer_count', 1000}      % 5000
                               ]}
                    ]},
           {server, [

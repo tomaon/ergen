@@ -12,11 +12,10 @@
           {driver, [
                     {name, <<"libergen_dm_drv">>},
                     {options, [
-                               {'configured_customer_count', 1000},  % 5000
-                               {'active_customer_count', 1000},      % 5000
-                               {'scale_factor', 500},                %  500
-                               {'days_of_initial_trades', 300},      %  300
-                               {'path', "/Volumes/Plextor/egen/1.12.0.1/flat_in"}
+                               {'configured_customer_count', 1000}, % 5000
+                               {'active_customer_count', 1000},     % 5000
+                               {'scale_factor', 500},               %  500
+                               {'days_of_initial_trades', 300}      %  300
                               ]}
                    ]},
           {server, [

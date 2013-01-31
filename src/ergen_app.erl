@@ -58,7 +58,8 @@ setup({driver,Driver}, #state{driver=undefined}=S)
   when is_list(Driver) ->
     case ergen_driver:load([{name,proplists:get_value(name,Driver)}]) of
         {ok, Tuple} ->
-            S#state{driver = {Tuple,proplists:get_value(options,Driver)}};
+            Path = filename:join(os:getenv("EGEN_HOME"), "flat_in"),
+            S#state{driver = {Tuple, [{path,Path}|proplists:get_value(options,Driver,[])]}};
         {error, Reason} ->
             throw({Reason,S})
     end;

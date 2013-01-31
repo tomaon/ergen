@@ -20,6 +20,7 @@
 #REBAR_OPT += --verbose 3
 
  ERL_OPT  =
+ ERL_OPT += -env EGEN_HOME $(EGEN_HOME) 
  ERL_OPT += +A30
  ERL_OPT += +K true
  ERL_OPT += +P 1048576
