@@ -50,12 +50,8 @@ call(Pid, Command, Args)
     gen_server:call(Pid, {call,Command,Args}, infinity).
 
 -spec cast(pid(),any()) -> any().
-cast(Pid, set_base_time) ->
-    call(Pid, ?CMD_MEE_SET_BASE_TIME, []);
-cast(Pid, disable_ticker_tape) ->
-    call(Pid, ?CMD_MEE_DISABLE_TICKER_TAPE, []);
-cast(Pid, enable_ticker_tape) ->
-    call(Pid, ?CMD_MEE_ENABLE_TICKER_TAPE, []).
+cast(Pid, Term) ->
+    call(Pid, Term). % forward
 
 %% == behaviour: gen_server ==
 
@@ -81,25 +77,25 @@ terminate(_Reason, State) ->
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
-handle_call({call,_,_}=R, From, #state{id=I,port=undefined}=S) ->
+handle_call({call,_Command,_Args}=R, From, #state{id=I,port=undefined}=S) ->
     case ergen_sup:start_port(mee, I) of
         {ok, Pid} ->
             handle_call(R, From, S#state{port = Pid});
         {error, Reason} ->
-            {stop, {error,Reason}, S}
+            {stop, {error,Reason}, ok, S}
     end;
 handle_call({call,Command,Args}, {_,Tag}, #state{}=S)
   when ?CMD_MEE_SUBMIT_TRADE_RESULT =:= Command;
        ?CMD_MEE_GENERATE_TRADE_RESULT =:= Command ->
-    {Time, {Value,State}} = timer:tc(fun handle_run/3, [Command,Args,S]),
+    {Time, Value} = timer:tc(fun handle_run/3, [Command,Args,S]),
     %%io:format("~p [~p:call] ~p=~p, ~pus~n", [self(),?MODULE,Command,Value,Time]),
-    handle_logger({Command,Value,Time}, State),
+    record_log({Command,Value,Time}, S),
     if
         is_integer(Value), Value > 0 ->
-            {ok, _} = timer:send_after(Value, {timeout,Tag}),
-            {reply, Value, State#state{tag = Tag}};
+            {ok, _TRef} = timer:send_after(Value, {timeout,Tag}),
+            {reply, Value, S#state{tag = Tag}};
         true ->
-            {reply, Value, State}
+            {reply, Value, S}
     end;
 handle_call({call,Command,Args}, _From, #state{port=P}=S) ->
     {reply, ergen_port:call(P, Command, Args), S};
@@ -123,12 +119,12 @@ handle_info({timeout,T}, #state{tag=T}=S) ->
     Self = self(),
     _ = spawn(fun() -> call(Self, generate_trade_result) end),
     {noreply, S#state{tag = undefined}};
-handle_info({timeout,_}, #state{}=S) ->
+handle_info({timeout,_Tag}, #state{}=S) ->
     {noreply, S#state{tag = undefined}};
 handle_info({#'basic.return'{reply_code=C,reply_text=T},_}, #state{}=S) ->
     {stop, {error,{C,T}}, S}; % TODO
 handle_info({'DOWN',_MRef,process,P,Info}, #state{channel=P}=S) ->
-    {stop, Info, S#state{channel = undefined}};
+    {stop, Info, S#state{channel = undefined, client = undefined, server = undefined}};
 handle_info({'EXIT',P,Reason}, #state{client=P}=S) ->
     {stop, Reason, S#state{client = undefined}};
 handle_info({'EXIT',P,Reason}, #state{port=P}=S) ->
@@ -138,18 +134,9 @@ handle_info({'EXIT',P,Reason}, #state{server=P}=S) ->
 handle_info(_Info, State) ->
     {noreply, State}.
 
-%% == private: callback ==
+%% == private ==
 
--spec handle_run(integer(),any(),state()) -> {any(),state()}.
-handle_run(Command, Args, #state{port=P}=S) ->
-    case ergen_port:call(P, Command, Args, fun handle_port/1) of
-        Term when is_list(Term) ->
-            {ergen_util:do_while(fun handle_publish/2, Term, S), S};
-        {error, Reason} ->
-            {error, Reason}
-    end.
-
--spec handle_port(any()) -> {reply,any()}.
+-spec handle_port(any()) -> {reply|noreply,any()}.
 handle_port(Term) when is_integer(Term) ->
     {reply, Term};
 handle_port({'ergen.BH.MF',_}=T) ->
@@ -172,8 +159,17 @@ handle_publish({K,_}=T, #state{client=P,exchange=E}) ->
             false
     end.
 
--spec handle_logger(any(),state()) -> ok.
-handle_logger(Term, #state{channel=C,logger=L}) ->
+-spec handle_run(integer(),any(),state()) -> any().
+handle_run(Command, Args, #state{port=P}=S) ->
+    case ergen_port:call(P, Command, Args, fun handle_port/1) of
+        Term when is_list(Term) ->
+            ergen_util:do_while(fun handle_publish/2, Term, S);
+        {error, Reason} ->
+            {error, Reason}
+    end.
+
+-spec record_log(any(),state()) -> ok.
+record_log(Term, #state{channel=C,logger=L}) ->
     ergen_amqp:publish(C, L, <<"ergen.LG">>, term_to_binary(Term)).
 
 %% == private: state ==
