@@ -24,14 +24,14 @@ stop(Pid)
 -spec publish(pid(),binary(),binary(),binary()) -> any().
 publish(Pid, Exchange, RoutingKey, Payload)
   when is_pid(Pid), is_binary(Exchange), is_binary(RoutingKey), is_binary(Payload) ->
-    publish(Pid, Exchange, RoutingKey, Payload, 10000). % default=5000
+    publish(Pid, Exchange, RoutingKey, Payload, infinity). % default=5000
 
--spec publish(pid(),binary(),binary(),binary(),non_neg_integer()) -> any().
+-spec publish(pid(),binary(),binary(),binary(),non_neg_integer()|infinity) -> any().
 publish(Pid, Exchange, RoutingKey, Payload, Timeout)
   when is_pid(Pid), is_binary(Exchange), is_binary(RoutingKey), is_binary(Payload) ->
     publish(Pid, Exchange, RoutingKey, Payload, Timeout, 1).
 
--spec publish(pid(),binary(),binary(),binary(),non_neg_integer(),integer()) -> any().
+-spec publish(pid(),binary(),binary(),binary(),non_neg_integer(),integer()|infinity) -> any().
 publish(Pid, Exchange, RoutingKey, Payload, Timeout, Retry)
   when is_pid(Pid), is_binary(Exchange), is_binary(RoutingKey), is_binary(Payload),
        is_integer(Timeout), Timeout > 0, is_integer(Retry), Retry > 0 ->
