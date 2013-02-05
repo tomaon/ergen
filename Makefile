@@ -56,10 +56,13 @@
 #
 all: compile
 
-compile get-deps:
+compile:
 #	rm -f c_src/*.o
 	@$(REBAR_ENV) $(REBAR_BIN) $(REBAR_OPT) $@
 	mv apps/*/ebin/*.app ebin
+
+check-deps list-deps get-deps update-deps delete-deps:
+	@$(REBAR_ENV) $(REBAR_BIN) $(REBAR_OPT) $@
 
 doc:
 	@$(REBAR_ENV) $(REBAR_BIN) $(REBAR_OPT) $@ skip_deps=true
@@ -80,7 +83,7 @@ typer: compile
 
 #
 env: init
-	@$(ENV) $(ERLANG_HOME)/bin/erl $(ERL_OPT)
+	@$(ENV) $(ERLANG_HOME)/bin/erl $(ERL_OPT) -s folsom
 bh ce dm mee: init
 	@$(ENV) $(ERLANG_HOME)/bin/erl $(ERL_OPT) -s ergen_$@
 init run:
