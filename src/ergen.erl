@@ -23,6 +23,7 @@ run(Interval)
     L = [
          {ergen_mee, set_base_time, []},
          {ergen_dm, do_cleanup_txn, []},
+         {ergen_st, run, []},
          {ergen_dm, run, []},
          {ergen_ce, run, [Interval]}
         ],
@@ -32,6 +33,7 @@ run(Interval)
 -spec cancel() -> ok.
 cancel() ->
     L = [
+         {ergen_st, cancel, []},
          {ergen_ce, cancel, []},
          {ergen_dm, cancel, []}
         ],

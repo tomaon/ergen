@@ -8,7 +8,7 @@
 -record(state, {
           type :: atom(),
           groups :: [[non_neg_integer()]],
-          driver :: tuple(),
+          driver = [] :: [any()],
           sup :: pid()
          }).
 
@@ -34,9 +34,9 @@ cleanup(#state{sup=P}=S)
   when is_pid(P) ->
     _ = ergen_sup:stop(P),
     cleanup(S#state{sup = undefined});
-cleanup(#state{driver={T,_}}=S) ->
+cleanup(#state{driver=[T|_]}=S) ->
     _ = ergen_driver:unload(T),
-    cleanup(S#state{driver = undefined});
+    cleanup(S#state{driver = []});
 cleanup(#state{}) ->
     %%io:format("~p [~p:cleanup]~n", [self(),?MODULE]),
     ergen_util:flush().
@@ -54,17 +54,18 @@ setup({groups,{seq,From,To,Incr,N}}, #state{groups=undefined}=S)
 setup({groups,Groups}, #state{groups=undefined}=S)
   when is_list(Groups) ->
     S#state{groups = Groups};
-setup({driver,Driver}, #state{driver=undefined}=S)
+setup({driver,Driver}, #state{driver=[]}=S)
   when is_list(Driver) ->
     case ergen_driver:load([{name,proplists:get_value(name,Driver)}]) of
         {ok, Tuple} ->
-            S#state{driver = {Tuple,proplists:get_value(options,Driver)}};
+            Path = filename:join(os:getenv("EGEN_HOME"), "flat_in"),
+            S#state{driver = [Tuple, [{path,Path}|proplists:get_value(options,Driver,[])]]};
         {error, Reason} ->
             throw({Reason,S})
     end;
-setup({server,Server}, #state{type=T,groups=G,driver={N,O}}=S)
+setup({server,Server}, #state{type=T,groups=G,driver=D}=S)
   when is_list(Server) ->
-    case ergen_sup:start_link(T, [N,O], [Server], G) of
+    case ergen_sup:start_link(T, D, [Server], G) of
         {ok, Pid} ->
             S#state{sup = Pid};
         {error, Reason} ->

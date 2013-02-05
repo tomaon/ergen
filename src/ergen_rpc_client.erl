@@ -24,14 +24,14 @@ stop(Pid)
 -spec publish(pid(),binary(),binary(),binary()) -> any().
 publish(Pid, Exchange, RoutingKey, Payload)
   when is_pid(Pid), is_binary(Exchange), is_binary(RoutingKey), is_binary(Payload) ->
-    publish(Pid, Exchange, RoutingKey, Payload, infinity). % default=5000
+    publish(Pid, Exchange, RoutingKey, Payload, 10000). % default=5000
 
--spec publish(pid(),binary(),binary(),binary(),non_neg_integer()|infinity) -> any().
+-spec publish(pid(),binary(),binary(),binary(),non_neg_integer()) -> any().
 publish(Pid, Exchange, RoutingKey, Payload, Timeout)
   when is_pid(Pid), is_binary(Exchange), is_binary(RoutingKey), is_binary(Payload) ->
     publish(Pid, Exchange, RoutingKey, Payload, Timeout, 1).
 
--spec publish(pid(),binary(),binary(),binary(),non_neg_integer(),integer()|infinity) -> any().
+-spec publish(pid(),binary(),binary(),binary(),non_neg_integer(),integer()) -> any().
 publish(Pid, Exchange, RoutingKey, Payload, Timeout, Retry)
   when is_pid(Pid), is_binary(Exchange), is_binary(RoutingKey), is_binary(Payload),
        is_integer(Timeout), Timeout > 0, is_integer(Retry), Retry > 0 ->
@@ -70,7 +70,7 @@ terminate(_Reason, State) ->
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
-handle_call({publish,Exchange,RoutingKey,Payload,Timeout}, {_Pid,Tag}=F,
+handle_call({publish,Exchange,RoutingKey,Payload,_Timeout}, {_Pid,Tag}=F,
             #state{channel=C,assigned=A}=S) ->
     case declare(S) of
         {ok, Q, Rest} ->
@@ -79,7 +79,7 @@ handle_call({publish,Exchange,RoutingKey,Payload,Timeout}, {_Pid,Tag}=F,
             Content = #amqp_msg{props = Props, payload = Payload},
             case ergen_amqp:publish(C, Exchange, RoutingKey, Content) of
                 ok ->
-                    {ok, _} = timer:send_after(Timeout, {timeout,Tag}),
+                    %%{ok, _} = timer:send_after(Timeout, {timeout,Tag}), TODO
                     {noreply, assign([{CorrelationId,F,Q}|A],unassign(Rest,S))};
                 {error, Reason} ->
                     ok = delete(Q, S),

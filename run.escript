@@ -1,5 +1,6 @@
 #!/usr/bin/env escript
 %% -*- erlang -*-
+%%! -s folsom
 
 main(_) ->
     %%spawn(fun () -> run(0) end),

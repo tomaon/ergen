@@ -320,7 +320,7 @@ namespace ODBC {
       cout << "INFO: SQLFetch, " << Reason(SQL_HANDLE_STMT, StatementHandle) << '\r' << endl;
       break;
     case SQL_NO_DATA:
-      cout << "DEBUG: SQLFetch, NODATA" << '\r' << endl;
+      //cout << "DEBUG: SQLFetch, NODATA" << '\r' << endl;
       break;
     case SQL_STILL_EXECUTING:
     case SQL_ERROR:

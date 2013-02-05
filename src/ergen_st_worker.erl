@@ -54,7 +54,6 @@ cast(Pid, Term, Delay)
 
 -record(state, {
           id :: non_neg_integer(),
-          tab :: tab(),
           channel :: pid(),
           server :: pid(),
           tref :: timer:tref()
@@ -87,17 +86,19 @@ handle_call(_Request, _From, State) ->
 handle_cast({stat,Interval,false}, #state{tref=T}=S)
   when Interval =< 0, undefined =/= T ->
     {ok, cancel} = timer:cancel(T),
+    io:format("~p~n", [folsom_statistics()]),
     {noreply, S#state{tref = undefined}};
 handle_cast({stat,Interval,false}, #state{}=S)
   when Interval > 0 ->
     {ok, TRef} = timer:send_after(Interval, {show,Interval,0}),
     {noreply, S#state{tref = TRef}};
-handle_cast({cast,{K,V,_},D}, #state{tab=T}=S) ->
-    try ets:update_counter(T, {K,V,D}, 1)
-    catch
-        _:_ ->
-            ets:insert(T, {{K,V,D},1})
+handle_cast({cast,{C,V,_},D}, #state{}=S) ->
+    if C =:= ?CMD_BH_DO_TXN_TR ->
+            folsom_incr(C);
+       true ->
+            ok
     end,
+    folsom_incr({C,V,D}),
     {noreply, S};
 handle_cast(_Request, State) ->
     {noreply, State}.
@@ -105,19 +106,22 @@ handle_cast(_Request, State) ->
 handle_info({show,Interval,N}, #state{}=S) when N =< 0 ->
     L= [
         {"|",1},
+        {"DM",3},
+        {"|",2},
         {"BV",6},{"CP",6},{"MW",6},{"SD",6},{"TL",6},{"TO",6},{"TS",6},{"TU",6},
         {"|",2},
-        {"MF",5},{"TR",5},
+        {"MF",5},{"TR",6},
         {"|",2},
-        {"DM",5},
+        {"tpsE",6},
         {"|",2}
        ],
     L1 = lists:flatten([ string:right(K,V) || {K,V} <- L ]),
     L2 = [ case C of $| -> $+; _ -> $- end || C <- L1],
-    io:format("~s~n~s~n", [L1,L2]),
+    io:format("~n~s~n~s~n", [L1,L2]),
     handle_info({show,Interval,20}, S);
-handle_info({show,Interval,N}, #state{tab=T}=S) ->
+handle_info({show,Interval,N}, #state{}=S) ->
     L = [
+         {{?CMD_BH_DO_TXN_DM,true,false},"~5b"},
          {{?CMD_BH_DO_TXN_BV,true,false},"~7b"},
          {{?CMD_BH_DO_TXN_CP,true,false},"~6b"},
          {{?CMD_BH_DO_TXN_MW,true,false},"~6b"},
@@ -127,14 +131,11 @@ handle_info({show,Interval,N}, #state{tab=T}=S) ->
          {{?CMD_BH_DO_TXN_TS,true,false},"~6b"},
          {{?CMD_BH_DO_TXN_TU,true,false},"~6b"},
          {{?CMD_BH_DO_TXN_MF,true,false},"~7b"},
-         {{?CMD_BH_DO_TXN_TR,true,false},"~5b"},
-         {{?CMD_BH_DO_TXN_DM,true,false},"~7b"}
+         {{?CMD_BH_DO_TXN_TR,true,false},"~6b"},
+         {?CMD_BH_DO_TXN_TR,"~8.1f"}
         ],
-    L1 = [ {case ets:lookup(T,K) of [] -> 0; [{K,V}] -> V end,F} || {K,F} <- L ],
-    L2 = lists:flatten([ io_lib:format(F,[V]) || {V,F} <- L1 ]),
-    io:format("~s~n", [L2]),
+    io:format("~s~n", [[ io_lib:format(F,[folsom_reset(T,Interval)]) || {T,F} <- L ]]),
     {ok, TRef} = timer:send_after(Interval, {show,Interval,N-1}),
-    ets:delete_all_objects(T),
     {noreply, S#state{tref = TRef}};
 handle_info({#'basic.return'{reply_code=C,reply_text=T},_}, #state{}=S) ->
     {stop, {error,{C,T}}, S}; % TODO
@@ -164,7 +165,8 @@ cleanup(#state{}) ->
 setup([Id]) ->
     %%io:format("~p [~p:setup] id=~w~n", [self(),?MODULE,Id]),
     process_flag(trap_exit, true),
-    {ok, #state{id = Id, tab = ets:new(?MODULE,[])}};
+    folsom_init(),
+    {ok, #state{id = Id}};
 setup(_) ->
     {stop, badarg}.
 
@@ -204,3 +206,36 @@ setup_server(Queue, #state{server=P}=S)
     end;
 setup_server(_Args, #state{}=S) ->
     throw({badarg,S}).
+
+%% == private ==
+
+folsom_init() ->
+    folsom_metrics:new_histogram(?MODULE, uniform, infinity, 0.015). % TODO
+
+folsom_statistics() ->
+    folsom_metrics:get_histogram_statistics(?MODULE).
+
+folsom_incr(Name) ->
+    case folsom_metrics:metric_exists(Name) of
+        false ->
+            folsom_metrics:new_counter(Name);
+        true ->
+            ok
+    end,
+    folsom_metrics:notify(Name, {inc,1}).
+
+folsom_reset(Name) ->
+    case folsom_metrics:get_metric_value(Name) of
+        {error,_,_} ->
+            0;
+        Value ->
+            folsom_metrics:notify(Name, {dec,Value}),
+            Value
+    end.
+
+folsom_reset(?CMD_BH_DO_TXN_TR=N, Interval) ->
+    Value = folsom_reset(N) / (Interval / 1000),
+    folsom_metrics:notify({?MODULE,Value}),
+    Value;
+folsom_reset(Name, _Interval) ->
+    folsom_reset(Name).
