@@ -13,7 +13,7 @@
 
 %% == public ==
 
--spec start_link([any()],non_neg_integer()) -> {ok,pid()}|{error,_}.
+-spec start_link([any()],pos_integer()) -> {ok,pid()}|{error,_}.
 start_link(Args, Id)
   when is_list(Args), is_integer(Id), Id > 0 ->
     case gen_server:start_link(?MODULE, [Id], []) of
@@ -53,7 +53,7 @@ cast(Pid, Term, Delay)
 %% == behaviour: gen_server ==
 
 -record(state, {
-          id :: non_neg_integer(),
+          id :: pos_integer(),
           channel :: pid(),
           server :: pid(),
           tref :: timer:tref()

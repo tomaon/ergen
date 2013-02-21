@@ -11,7 +11,7 @@
 
 %% == public ==
 
--spec start_link(tuple(),[any()],non_neg_integer()) -> {ok,pid()}|{error,_}.
+-spec start_link(tuple(),[any()],pos_integer()) -> {ok,pid()}|{error,_}.
 start_link(Driver, Args, Id)
   when is_tuple(Driver), is_list(Args), is_integer(Id), Id > 0 ->
     case gen_server:start_link(?MODULE, [Id], []) of

@@ -17,7 +17,7 @@ stop() ->
 run() ->
     run(300).
 
--spec run(non_neg_integer()) -> ok.
+-spec run(pos_integer()) -> ok.
 run(Interval)
   when is_integer(Interval), Interval > 0 ->
     L = [

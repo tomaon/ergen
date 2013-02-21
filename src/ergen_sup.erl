@@ -41,7 +41,7 @@ cast(Type, Term)
 
 %% -- --
 
--spec start_port(atom(),non_neg_integer()) -> {ok,pid()}|{error,_}.
+-spec start_port(atom(),pos_integer()) -> {ok,pid()}|{error,_}.
 start_port(Type, Id)
   when is_atom(Type), is_integer(Id), Id > 0 ->
     case find_child(name(Type), ergen_port_sup) of
