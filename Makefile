@@ -57,25 +57,20 @@
 all: compile
 
 compile:
-#	rm -f c_src/*.o
-	@$(REBAR_ENV) $(REBAR_BIN) $(REBAR_OPT) $@
+	@$(REBAR_ENV) $(REBAR_BIN) $(REBAR_OPT) $@ skip_deps=true
 	mv apps/*/ebin/*.app ebin
 
 check-deps list-deps get-deps update-deps delete-deps:
 	@$(REBAR_ENV) $(REBAR_BIN) $(REBAR_OPT) $@
 
-doc:
+clean doc:
 	@$(REBAR_ENV) $(REBAR_BIN) $(REBAR_OPT) $@ skip_deps=true
 
-test:
-	ERL_FLAGS="$(EUNIT_OPT)" $(REBAR_ENV) $(REBAR_BIN) $(REBAR_OPT) skip_deps=true eunit
-
-clean:
-	@rm -f erl_crash.dump
-	@$(REVAR_ENV) $(REBAR_BIN) $(REBAR_OPT) $@
+eunit:
+	ERL_FLAGS="$(EUNIT_OPT)" $(REBAR_ENV) $(REBAR_BIN) $(REBAR_OPT) skip_deps=true $@
 
 #
-dialyzer: compile
+dialyzer:
 #	$(ENV) $(ERLANG_HOME)/bin/$@ $(DIALYZER_OPT) | fgrep -v -f .dialyzer.ignore-warnings
 	$(ENV) $(ERLANG_HOME)/bin/$@ $(DIALYZER_OPT)
 typer: compile
