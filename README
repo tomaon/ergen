@@ -2,3 +2,21 @@
 =======
 
 TPC-E benchmark simulator, using RabbitMQ.
+
+
+ requirement
+-------------
+ erlang, R15B03-1
+ rabbitmq, 2.8.7
+ mysql, 5.5.x
+
+
+ building and running
+----------------------
+ $ make build
+ $ make run
+
+ Eshell V5.9.3.1  (abort with ^G)
+ 1> ergen:run().
+
+ 2> ergen:cancel().
