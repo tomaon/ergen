@@ -8,7 +8,7 @@
   {applications, [kernel, stdlib]},
   {mod, {ergen_app,
          [
-          {groups, {seq,101,109,1,3} },
+          {groups, {seq,101,115,1,3} },
           {driver, [
                     {name, <<"libergen_bh_drv">>},
                     {options, [

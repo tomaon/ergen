@@ -1,3 +1,8 @@
+-- = other =
+
+DROP TABLE IF EXISTS sequence
+;
+
 -- == L6 ==
 
 DROP TABLE IF EXISTS trade_request

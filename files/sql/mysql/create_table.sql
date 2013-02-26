@@ -574,5 +574,8 @@ CREATE TABLE IF NOT EXISTS sequence (
 INSERT INTO sequence VALUE ('trade', 0)
 ;
 
+COMMIT
+;
+
 -- UPDATE sequence SET id = LAST_INSERT_ID(id+1) WHERE name = 'trade';
 -- SELECT LAST_INSERT_ID();

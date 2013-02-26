@@ -6,5 +6,5 @@
   {modules, []},
   {registered, []},
   {included_applications, [ergen_dm, ergen_bh, ergen_mee, ergen_ce, ergen_st]},
-  {applications, [kernel, stdlib]}
+  {applications, [kernel, stdlib, folsom]}
  ]}.

@@ -1,0 +1,56 @@
+diff -uNr egen-1.12.0/inc/EGenUtilities_stdafx.h egen-1.12.0.1/inc/EGenUtilities_stdafx.h
+--- egen-1.12.0/inc/EGenUtilities_stdafx.h	2009-09-17 04:07:00.000000000 +0900
++++ egen-1.12.0.1/inc/EGenUtilities_stdafx.h	2012-09-21 15:06:40.000000000 +0900
+@@ -41,6 +41,7 @@
+ 
+ #include <cstddef>
+ #include <cstdio>
++#include <cstring>
+ #ifdef WIN32            //for Windows platform
+ #include <windows.h>
+ #else
+diff -uNr egen-1.12.0/inc/TxnHarnessDBInterface.h egen-1.12.0.1/inc/TxnHarnessDBInterface.h
+--- egen-1.12.0/inc/TxnHarnessDBInterface.h	2010-02-03 09:56:49.000000000 +0900
++++ egen-1.12.0.1/inc/TxnHarnessDBInterface.h	2012-09-21 15:07:47.000000000 +0900
+@@ -44,6 +44,7 @@
+ #include <string>
+ #include <cassert>
+ #include <cstdio>
++#include <cstring>
+ #include "TxnHarnessStructs.h"
+ #include "TxnHarnessSendToMarketInterface.h"
+ #include "error.h"
+diff -uNr egen-1.12.0/inc/error.h egen-1.12.0.1/inc/error.h
+--- egen-1.12.0/inc/error.h	2010-03-09 01:06:38.000000000 +0900
++++ egen-1.12.0.1/inc/error.h	2012-11-13 10:44:38.000000000 +0900
+@@ -228,7 +228,7 @@
+         TUF2_ERROR1 = -1021,    // num_updated <> num_found || num_found not in [0..max_trades]
+         TUF2_WARN1  = +1021,    // num_updated == 0
+         TUF3_ERROR1 = -1031,    // num_updated <> num_found || num_found not in [0..max_trades]
+-        TUF3_WARN1  = +1031,    // num_updated == 0
++        TUF3_WARN1  = +1031 /*+pedantic:,*/    // num_updated == 0
+ 
+     }   mErrCode;
+ };
+diff -uNr egen-1.12.0/inc/threading.h egen-1.12.0.1/inc/threading.h
+--- egen-1.12.0/inc/threading.h	2009-09-23 12:40:55.000000000 +0900
++++ egen-1.12.0.1/inc/threading.h	2012-09-21 15:07:15.000000000 +0900
+@@ -40,6 +40,7 @@
+ #include <memory>
+ #include <sstream>
+ #include <stdexcept>
++#include <cstring>
+ 
+ #include "EGenStandardTypes.h"
+ 
+diff -uNr egen-1.12.0/src/locking.cpp egen-1.12.0.1/src/locking.cpp
+--- egen-1.12.0/src/locking.cpp	2009-09-17 04:07:07.000000000 +0900
++++ egen-1.12.0.1/src/locking.cpp	2012-09-21 15:10:42.000000000 +0900
+@@ -42,6 +42,7 @@
+ #include <stdexcept>
+ #include <cerrno>
+ #include <cstdlib>
++#include <cstring>
+ #include <sys/time.h>
+ 
+ using std::strerror;
