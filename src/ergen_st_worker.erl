@@ -235,7 +235,7 @@ folsom_reset(Name) ->
 
 folsom_reset(?CMD_BH_DO_TXN_TR=N, Interval) ->
     Value = folsom_reset(N) / (Interval / 1000),
-    folsom_metrics:notify({?MODULE,Value}),
+    folsom_metrics:notify(?MODULE, Value),
     Value;
 folsom_reset(Name, _Interval) ->
     folsom_reset(Name).

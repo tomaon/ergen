@@ -12,8 +12,8 @@
           {driver, [
                     {name, <<"libergen_dm_drv">>},
                     {options, [
-                               {'configured_customer_count', 1000}, % 5000
-                               {'active_customer_count', 1000},     % 5000
+                               {'configured_customer_count', 5000}, % 5000
+                               {'active_customer_count', 5000},     % 5000
                                {'scale_factor', 500},               %  500
                                {'days_of_initial_trades', 300}      %  300
                               ]}

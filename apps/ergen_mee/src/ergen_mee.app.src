@@ -13,8 +13,8 @@
                     {name, <<"libergen_mee_drv">>},
                     {options, [
                                {'trading_time_so_far', 0},          %    0
-                               {'configured_customer_count', 1000}, % 5000
-                               {'active_customer_count', 1000}      % 5000
+                               {'configured_customer_count', 5000}, % 5000
+                               {'active_customer_count', 5000}      % 5000
                               ]}
                    ]},
           {server, [

@@ -12,8 +12,7 @@
           {driver, [
                     {name, <<"libergen_bh_drv">>},
                     {options, [
-                               {connectString, "dsn=myodbc;server=localhost;socket=/tmp/mysql.sock;user=tpce;pwd=tpce;database=tpce"} % darwin 12.2.0
-                               %%{connectString, "dsn=myodbc;server=localhost;socket=/var/run/mysqld/mysqld.sock;user=tpce;pwd=tpce;database=tpce"} % ubuntu 12.04.1
+                               {connectString, <<"dsn=myodbc;server=localhost;socket=/tmp/mysql.sock;user=tpce;pwd=tpce;database=tpce">>}
                               ]}
                    ]},
           {server, [

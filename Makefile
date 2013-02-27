@@ -7,6 +7,8 @@
  GCC_HOME = /opt/gnu/gcc/4.6.3
 
 #
+ CC = $(GCC_HOME)/bin/gcc
+
  CXX = $(GCC_HOME)/bin/g++
 
  CXXFLAGS  =
@@ -17,19 +19,18 @@
  CXXFLAGS += -Wall
  CXXFLAGS += -fPIC
  CXXFLAGS += -fno-common
- CXXFLAGS += -I$(EGEN_HOME)/inc
 
  LDFLAGS  =
- LDFLAGS += -L$(EGEN_HOME)/lib -legen
- LDFLAGS += -lstdc++
 
 #
  ENV  = DYLD_LIBRARY_PATH=$(GCC_HOME)/lib
  ENV += ERL_LIBS="$(ERGEN_HOME):$(ERGEN_HOME)/deps"
 
- REBAR_BIN  = $(HOME)/Desktop/work/tmp/rebar/rebar
+ REBAR_BIN  = $(ERGEN_HOME)/rebar
 
  REBAR_ENV  = $(ENV)
+ REBAR_ENV += EGEN_HOME="$(EGEN_HOME)"
+ REBAR_ENV += CC="$(CC)"
  REBAR_ENV += CXX="$(CXX)"
  REBAR_ENV += CXXFLAGS="$(CXXFLAGS)"
  REBAR_ENV += LDFLAGS="$(LDFLAGS)"
@@ -87,7 +88,7 @@ cleanall: clean delete-deps
 
 #
 run: init
-	@$(ENV) $(ERLANG_HOME)/bin/erl $(ERL_OPT) -s folsom -s ergen
+	@$(ENV) $(ERLANG_HOME)/bin/erl $(ERL_OPT) -s folsom -s ergen -config $@
 bh ce dm mee: init
 	@$(ENV) $(ERLANG_HOME)/bin/erl $(ERL_OPT) -s ergen_$@
 init:
