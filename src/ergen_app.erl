@@ -15,7 +15,7 @@
 -type(state() :: #state{}).
 
 start(StartType, StartArgs) ->
-    try lists:foldl(fun setup/2, setup(StartType), StartArgs) of
+    try lists:foldl(fun setup/2, setup(StartType), update(StartArgs)) of
         #state{sup=P}=S ->
             {ok, P, S}
     catch
@@ -73,3 +73,25 @@ setup({server,Server}, #state{type=T,groups=G,driver=D}=S)
     end;
 setup({K,_}, #state{}=S) ->
     throw({{badmatch,K},S}).
+
+%% == private: etc ==
+
+-spec update([any()]) -> [any()].
+update(List) ->
+    {ok, Application} = application:get_application(),
+    update(List, application:get_all_env(Application), []).
+
+-spec update([any()],[any()],[any()]) -> [any()].
+update([], _List2, List3) ->
+    lists:reverse(List3);
+update([{K,V}=H|T], List2, List3)  ->
+    case lists:keyfind(K, 1, List2) of
+        false ->
+            update(T, List2, [H|List3]);
+        {K, L} when is_list(L) ->
+            update(T, List2, [{K,update(V, L, [])}|List3]);
+        Tuple ->
+            update(T, List2, [Tuple|List3])
+    end;
+update([H|T], List2, List3) ->
+    update(T, List2, [H|List3]).
