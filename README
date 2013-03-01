@@ -8,15 +8,23 @@ TPC-E benchmark simulator, using RabbitMQ.
 -------------
  erlang, R15B03-1
  rabbitmq, 2.8.7
- mysql, 5.5.x
+ amqp_client, 2.8.7
 
+ odbc
+   mysql, 5.5.x
 
  building and running
 ----------------------
+ $ unzip -d deps /path/amqp_client-2.8.7-src/dist/amqp_client-2.8.7.ez 
+ $ unzip -d deps /path/amqp_client-2.8.7-src/dist/rabbit_common-2.8.7.ez
  $ make build
  $ make run
 
  Eshell V5.9.3.1  (abort with ^G)
  1> ergen:run().
+
+ or
+
+ 1> ergen:run(300). % 300 = interval, ms
 
  2> ergen:cancel().
