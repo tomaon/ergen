@@ -6,18 +6,21 @@ TPC-E benchmark simulator, using RabbitMQ.
 
  requirement
 -------------
- erlang, R15B03-1
- rabbitmq, 2.8.7
- amqp_client, 2.8.7
+ erlang, R15B|R16B
+ rabbitmq, >= 2.8.7
+ amqp_client, >= 2.8.7
 
  odbc
-   mysql, 5.5.x
+   mysql, >= 5.5
 
  building and running
 ----------------------
- $ unzip -d deps /path/amqp_client-2.8.7-src/dist/amqp_client-2.8.7.ez 
- $ unzip -d deps /path/amqp_client-2.8.7-src/dist/rabbit_common-2.8.7.ez
+ $ unzip -d deps /path/amqp_client-X.Y.Z-src/dist/amqp_client-X.Y.Z.ez 
+ $ unzip -d deps /path/amqp_client-X.Y.Z-src/dist/rabbit_common-X.Y.Z.ez
  $ make build
+
+(run EGenLoader, ...)
+
  $ make run
 
  Eshell V5.9.3.1  (abort with ^G)

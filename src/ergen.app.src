@@ -2,7 +2,7 @@
 {application, ergen,
  [{description, "ERGen: TPC-E benchmark simulator"},
   {id, "ergen"},
-  {vsn, "0.5"},
+  {vsn, "0.5.1"},
   {modules, []},
   {registered, []},
   {included_applications, [ergen_dm, ergen_bh, ergen_mee, ergen_ce, ergen_st]},

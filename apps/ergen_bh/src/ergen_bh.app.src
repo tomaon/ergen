@@ -2,7 +2,7 @@
 {application, ergen_bh,
  [{description, "ERGen: TPC-E benchmark simulator / Brokerage House"},
   {id, "ergen"},
-  {vsn, "0.5"},
+  {vsn, "0.5.1"},
   {modules, []},
   {registered, [ergen_bh_sup]},
   {applications, [kernel, stdlib]},

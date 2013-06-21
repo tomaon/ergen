@@ -4,3 +4,8 @@ doc
 ebin
 files/egen
 priv
+rebar
+*.*~
+*.beam
+*.dump
+*.o

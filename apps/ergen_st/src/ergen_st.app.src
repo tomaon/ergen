@@ -2,7 +2,7 @@
 {application, ergen_st,
  [{description, "ERGen: TPC-E benchmark simulator / stat"},
   {id, "ergen"},
-  {vsn, "0.5"},
+  {vsn, "0.5.1"},
   {modules, []},
   {registered, [ergen_st_sup]},
   {applications, [kernel, stdlib, folsom]},

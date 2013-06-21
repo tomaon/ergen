@@ -2,7 +2,7 @@
 {application, ergen_mee,
  [{description, "ERGen: TPC-E benchmark simulator / Market Exchange Emulator"},
   {id, "ergen"},
-  {vsn, "0.5"},
+  {vsn, "0.5.1"},
   {modules, []},
   {registered, [ergen_mee_sup]},
   {applications, [kernel, stdlib]},
