@@ -2,6 +2,9 @@
 -- TODO : ln -s $EGEN_HOME/flat_out
 --
 
+SELECT @@sql_log_bin INTO @x_sql_log_bin;
+SET sql_log_bin = OFF;
+
 -- == L1 ==
 
 --  2.2.6.8 NEWS_ITEM (NI_)
@@ -119,3 +122,6 @@ LOAD DATA LOCAL INFILE "./flat_out/TradeHistory.txt"
 -- LOAD DATA LOCAL INFILE "./flat_out/TradeRequest.txt"
 --      INTO TABLE trade_request FIELDS TERMINATED BY "|";
 
+COMMIT;
+
+SET sql_log_bin = @x_sql_log_bin;

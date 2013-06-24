@@ -1,3 +1,6 @@
+SELECT @@default_storage_engine INTO @x_default_storage_engine;
+-- SET @@default_storage_engine = ndbcluster;
+
 -- == L1 ==
 
 -- ---------------------------------------------------------
@@ -579,3 +582,5 @@ COMMIT
 
 -- UPDATE sequence SET id = LAST_INSERT_ID(id+1) WHERE name = 'trade';
 -- SELECT LAST_INSERT_ID();
+
+SET @@default_storage_engine = @x_default_storage_engine;

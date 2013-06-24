@@ -213,7 +213,11 @@ folsom_init() ->
     folsom_metrics:new_histogram(?MODULE, uniform, infinity, 0.015). % TODO
 
 folsom_statistics() ->
-    folsom_metrics:get_histogram_statistics(?MODULE).
+    try folsom_metrics:get_histogram_statistics(?MODULE)
+    catch
+        _:Reason ->
+           io_lib:format("ERROR: ~p~n", [Reason])
+    end.
 
 folsom_incr(Name) ->
     case folsom_metrics:metric_exists(Name) of
