@@ -3,7 +3,7 @@
 --
 
 SELECT @@sql_log_bin INTO @x_sql_log_bin;
-SET sql_log_bin = OFF;
+SET sql_log_bin = 0;
 
 -- == L1 ==
 
