@@ -1,5 +1,5 @@
 SELECT @@default_storage_engine INTO @x_default_storage_engine;
--- SET @@default_storage_engine = ndbcluster;
+SET @@default_storage_engine = MyISAM;
 
 -- == L1 ==
 
