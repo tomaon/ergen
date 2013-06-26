@@ -2,8 +2,9 @@
 -- TODO : ln -s $EGEN_HOME/flat_out
 --
 
-SELECT @@sql_log_bin INTO @x_sql_log_bin;
+SET @tmp_sql_log_bin = @@sql_log_bin;
 SET sql_log_bin = 0;
+SELECT @@sql_log_bin;
 
 -- == L1 ==
 
@@ -124,4 +125,7 @@ LOAD DATA LOCAL INFILE "./flat_out/TradeHistory.txt"
 
 COMMIT;
 
-SET sql_log_bin = @x_sql_log_bin;
+-- == ==
+
+SET sql_log_bin = @tmp_sql_log_bin;
+SELECT @@sql_log_bin;

@@ -1,4 +1,4 @@
--- = other =
+-- == other ==
 
 DROP TABLE IF EXISTS sequence
 ;
