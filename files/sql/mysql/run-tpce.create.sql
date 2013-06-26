@@ -1,5 +1,6 @@
-SELECT @@default_storage_engine INTO @x_default_storage_engine;
-SET @@default_storage_engine = MyISAM;
+SET @tmp_default_storage_engine = @@default_storage_engine;
+SET @@default_storage_engine = InnoDB;
+SELECT @@default_storage_engine;
 
 -- == L1 ==
 
@@ -567,7 +568,7 @@ CREATE TABLE IF NOT EXISTS trade_request (
     FOREIGN KEY (tr_b_id) REFERENCES broker (b_id)
 );
 
--- = other =
+-- == other ==
 
 CREATE TABLE IF NOT EXISTS sequence (
   name ENUM('trade')
@@ -583,4 +584,7 @@ COMMIT
 -- UPDATE sequence SET id = LAST_INSERT_ID(id+1) WHERE name = 'trade';
 -- SELECT LAST_INSERT_ID();
 
-SET @@default_storage_engine = @x_default_storage_engine;
+-- == ==
+
+SET @@default_storage_engine = @tmp_default_storage_engine;
+SELECT @@default_storage_engine;
