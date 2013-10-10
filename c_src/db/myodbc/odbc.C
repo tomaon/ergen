@@ -124,22 +124,21 @@ namespace ODBC {
    */
   SQLRETURN Cancel(SQLHSTMT StatementHandle) {
 
-    SQLRETURN rc = SQLCancel(StatementHandle);
+    SQLRETURN rc = SQLCloseCursor(StatementHandle);
 
     switch (rc) {
     case SQL_SUCCESS:
-      //cout << "DEBUG: SQLCancel, handle=" << StatementHandle << '\r' << endl;
+      //cout << "DEBUG: SQLCloseCursor, handle=" << StatementHandle << '\r' << endl;
       break;
     case SQL_SUCCESS_WITH_INFO:
-      cout << "INFO: SQLCancel, " << Reason(SQL_HANDLE_STMT, StatementHandle) << '\r' << endl;
+      cout << "INFO: SQLCloseCursor, " << Reason(SQL_HANDLE_STMT, StatementHandle) << '\r' << endl;
       break;
     case SQL_ERROR:
     case SQL_INVALID_HANDLE:
-    case SQL_STILL_EXECUTING:
-      cerr << "ERROR: SQLCancel, " << Reason(SQL_HANDLE_STMT, StatementHandle) << '\r' << endl;
+      cerr << "ERROR: SQLCloseCursor, " << Reason(SQL_HANDLE_STMT, StatementHandle) << '\r' << endl;
       break;
     default:
-      cerr << "FATAL: SQLCancel, " << Reason(SQL_HANDLE_STMT, StatementHandle) << '\r' << endl;
+      cerr << "FATAL: SQLCloseCursor, " << Reason(SQL_HANDLE_STMT, StatementHandle) << '\r' << endl;
       exit(1);
     }
 
